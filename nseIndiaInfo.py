@@ -6,9 +6,9 @@ index_symbols = {
     '1': 'NIFTY',
     '2': 'BANKNIFTY',
     '3': 'FINNIFTY',
-    # '4': 'SENSEX',
+    '4': 'MIDCPNIFTY',
 } 
-print("Select the index to get the data\n 1. NIFTY\n 2. BANKNIFTY\n 3. FINNIFTY\n")
+print("Select the index to get the data\n 1. NIFTY\n 2. BANKNIFTY\n 3. FINNIFTY\n 4. MIDCPNIFTY\n")
 index = input("Enter the index number: ").strip()
 print("You have selected: ", index_symbols[index]+"\n")
 
@@ -73,9 +73,10 @@ while True:
     total_call_oi = optionchain['CALL OI'].sum()
     total_put_oi = optionchain['PUT OI'].sum() 
     difference_in_oi = total_call_oi - total_put_oi 
-    if time_stamp == rawdata['records']['timestamp']:
+    # if time_stamp != rawdata['records']['timestamp']:
+    if True:
         print(time_stamp)
-        time_stamp = rawdata['records']['timestamp']
+        # time_stamp = o['records']['timestamp']
         print("total call oi =", total_call_oi)
         print("total put oi =", total_put_oi) 
         print("difference in oi =", difference_in_oi) 
@@ -91,7 +92,7 @@ while True:
         else:
             print("Neutral conseldate market: ",difference_in_oi)
         print("--------------------------------------------")
-    # time.sleep(10)
+    time.sleep(60)
 
 
 
