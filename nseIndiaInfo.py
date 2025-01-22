@@ -1,3 +1,6 @@
+
+
+# ////////////////////////////////////////
 import requests
 import pandas as pd
 import time
@@ -8,6 +11,7 @@ index_symbols = {
     '3': 'FINNIFTY',
     '4': 'MIDCPNIFTY',
 } 
+
 print("Select the index to get the data\n 1. NIFTY\n 2. BANKNIFTY\n 3. FINNIFTY\n 4. MIDCPNIFTY\n")
 index = input("Enter the index number: ").strip()
 print("You have selected: ", index_symbols[index]+"\n")
@@ -15,15 +19,33 @@ print("You have selected: ", index_symbols[index]+"\n")
 
 url = 'https://www.nseindia.com/api/option-chain-indices?symbol=' + index_symbols[index]
 # url = 'https://www.nseindia.com/api/option-chain-indices?symbol=FINNIFTY'
-header = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36 Edg/103.0.1264.37','accept-encoding': 'gzip, deflate, br','accept-language': 'en-GB,en;q=0.9,en-US;q=0.8'}
-
+# header = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36 Edg/103.0.1264.37','accept-encoding': 'gzip, deflate, br','accept-language': 'en-GB,en;q=0.9,en-US;q=0.8'}
+headers = {
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36 Edg/103.0.1264.37',
+    'accept-encoding': 'gzip, deflate, br',
+    'accept-language': 'en-GB,en;q=0.9,en-US;q=0.8'
+}
 session = requests.Session()
-request = session.get(url,headers=header)
+request = session.get(url,headers=headers)
 cookies = dict(request.cookies)
-
+print("Status Code:", request.status_code)
+data = None
+# print("Response Text:", request.text)
 # initialize the url and headers
-response = session.get(url,headers=header,cookies=cookies).json()
-rawdata = pd.DataFrame(response)
+response = None
+try:
+    response = session.get(url, headers=headers, cookies=cookies)
+    print("Final URL:", response.url)
+    data = response.json()
+    # print("Data retrieved:", data)
+except ValueError as e:
+    print("Error parsing JSON:", e)
+   
+
+print("inside....1")
+rawdata = pd.DataFrame(data)
+print(rawdata)
+
 
 # get the required data from the response
 current_value = rawdata['records']['underlyingValue']
@@ -31,7 +53,7 @@ time_stamp = rawdata['records']['timestamp']
 
 # get the data from the response
 def dataframe():
-    response = session.get(url,headers=header,cookies=cookies).json()
+    response = session.get(url,headers=headers,cookies=cookies).json()
     rawdata = pd.DataFrame(response)
     rawop = pd.DataFrame(rawdata['filtered']['data']).fillna(0)
 
@@ -61,11 +83,7 @@ def dataframe():
     optionchain = pd.DataFrame(data)
     return optionchain
 
-# def change_in_oi():
-#     print(dataframe())
-#     current_value = rawdata['records']['underlyingValue'] 
 
-# change_in_oi() 
 
 while True:
     optionchain = dataframe()
